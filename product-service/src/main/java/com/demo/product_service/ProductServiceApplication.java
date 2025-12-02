@@ -15,12 +15,12 @@ public class ProductServiceApplication {
 		System.out.println("╔════════════════════════════════════════════════════════╗");
         System.out.println("║         Product Service Started Successfully!          ║");
         System.out.println("║                                                        ║");
-        System.out.println("║   Service URL: http://localhost:8082                   ║");
-        System.out.println("║   API Base: http://localhost:8082/api/products         ║");
+        System.out.println("║   Service URL: http://localhost:8081                   ║");
+        System.out.println("║   API Base: http://localhost:8081/api/products         ║");
         System.out.println("║   Database: MongoDB (productdb)                        ║");
         System.out.println("║   Eureka: http://localhost:8761                        ║");
         System.out.println("║                                                        ║");
-        System.out.println("║   Health Check: http://localhost:8082/actuator/health  ║");
+        System.out.println("║   Health Check: http://localhost:8081/actuator/health  ║");
         System.out.println("╚════════════════════════════════════════════════════════╝");
 	}
 

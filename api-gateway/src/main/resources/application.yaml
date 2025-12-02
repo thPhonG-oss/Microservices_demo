@@ -1,6 +1,6 @@
 # Server Configuration
 server:
-  port: 8081  # Port chính mà client gọi vào
+  port: 8080  # Port chính mà client gọi vào
 
 # Spring Application Configuration
 spring:

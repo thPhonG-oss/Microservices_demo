@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8081
 
 spring:
   application:
@@ -7,7 +7,7 @@ spring:
   data:
     mongodb:
       # URI sẽ được override bởi environment variable
-      uri: mongodb://admin:admin123@mongodb:27018/productdb?authSource=admin
+      uri: mongodb://admin:admin123@mongodb:27017/productdb?authSource=admin
       database: productdb
 
 eureka:
