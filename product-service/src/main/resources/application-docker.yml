@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: product-service
+  data:
+    mongodb:
+      # URI sẽ được override bởi environment variable
+      uri: mongodb://admin:admin123@mongodb:27018/productdb?authSource=admin
+      database: productdb
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+  instance:
+    prefer-ip-address: false
+    hostname: product-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+logging:
+  level:
+    com.demo.product: INFO

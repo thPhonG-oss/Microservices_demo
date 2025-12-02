@@ -1,0 +1,62 @@
+# Server Configuration
+server:
+  port: 8081  # Port chính mà client gọi vào
+
+# Spring Application Configuration
+spring:
+  application:
+    name: api-gateway
+  
+  # Spring Cloud Gateway Configuration
+  cloud:
+    gateway:
+      # Enable service discovery
+      discovery:
+        locator:
+          enabled: true  # Tự động tạo routes từ Eureka
+          lower-case-service-id: true  # Chuyển service name thành lowercase
+      
+      # Manual Routes Configuration
+      routes:
+        # Route 1: Product Service
+        - id: product-service  # ID unique của route
+          uri: lb://PRODUCT-SERVICE  # lb = load balancer, PRODUCT-SERVICE = tên trong Eureka
+          predicates:
+            - Path=/api/products/**  # Match mọi request bắt đầu bằng /api/products
+          filters:
+            - StripPrefix=0  # Giữ nguyên path khi forward
+        
+        # Route 2: Order Service
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=0
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/  # Địa chỉ Discovery Service
+    register-with-eureka: true  # Đăng ký với Eureka
+    fetch-registry: true  # Fetch registry để biết các services khác
+  instance:
+    prefer-ip-address: true  # Dùng IP thay vì hostname
+    instance-id: ${spring.application.name}:${server.port}  # ID format: api-gateway:8080
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway  # Expose endpoints
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG  # Log routing info
+    com.demo.gateway: DEBUG
