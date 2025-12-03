@@ -99,10 +99,11 @@ services:
       start_period: 60s
 
   # Product Service
+  # Product Service (Node.js)
   product-service:
     build:
-      context: .
-      dockerfile: product-service/Dockerfile
+      context: ./product-service
+      dockerfile: Dockerfile
     container_name: product-service
     restart: unless-stopped
     ports:
@@ -110,9 +111,13 @@ services:
     networks:
       - microservices-network
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATA_MONGODB_URI=mongodb://admin:admin123@mongodb:27017/productdb?authSource=admin
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - NODE_ENV=production
+      - PORT=8081
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/productdb?authSource=admin
+      - EUREKA_HOST=discovery-service
+      - EUREKA_PORT=8761
+      - SERVICE_NAME=product-service
+      - SERVICE_PORT=8081
     depends_on:
       mongodb:
         condition: service_healthy

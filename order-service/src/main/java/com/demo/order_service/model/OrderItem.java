@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +30,18 @@ public class OrderItem {
     @Column(name = "product_name", nullable = false)
     String productName;
 
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "price", nullable = false)
     Double price;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
 
-    @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
+    @Column(name = "subtotal", nullable = false)
     Double subtotal;
 
-    @Column(name = "updated_at")
+    @Column(name = "created_at")
     LocalDateTime createdAt;
 
-    @Column(name = "created_at")
+    @Column(name = "updated_at")
     LocalDateTime updatedAt;
 }

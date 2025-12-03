@@ -17,9 +17,8 @@
     <!-- Khai báo các module con -->
     <modules>
         <module>discovery-service</module>
-        <!-- <module>api-gateway</module>
-        <module>product-service</module>
-        <module>order-service</module> -->
+        <module>api-gateway</module>
+        <module>order-service</module>
     </modules>
 
     <!-- Parent của Spring Boot -->

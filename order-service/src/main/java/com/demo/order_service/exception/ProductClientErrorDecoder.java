@@ -12,9 +12,8 @@ public class ProductClientErrorDecoder implements ErrorDecoder {
         switch (response.status()) {
             case 404:
                 return new ProductNotFoundException("Product not found");
-                break;
             case 503:
-                return new ServiceUnavailableException("Service unavailable");
+                return new Exception("Product Service is unavailable");
             default:
                 return new Exception("Error calling Product Service");
         }
