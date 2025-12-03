@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class ProductResponse {
-    private String id;
-    private String name;
-    private String description;
-    private Double price;
-    private Integer stock;
-    private String category;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    String id;
+    String name;
+    String description;
+    Double price;
+    Integer stock;
+    String category;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
     /**
      * Indicator if product is available
