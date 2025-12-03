@@ -1,25 +1,13 @@
-const Product = require('../models/Product');
+// src/controllers/productController.js
+const productService = require('../services/productService');
 
 // Create a new product
 exports.createProduct = async (req, res, next) => {
     try {
         console.log('📝 Creating product:', req.body.name);
-        
-        const product = new Product(req.body);
-        const savedProduct = await product.save();
-        
-        console.log('✅ Product created successfully with ID:', savedProduct._id);
-        
-        res.status(201).json({
-            id: savedProduct._id,
-            name: savedProduct.name,
-            description: savedProduct.description,
-            price: savedProduct.price,
-            stock: savedProduct.stock,
-            category: savedProduct.category,
-            createdAt: savedProduct.createdAt,
-            updatedAt: savedProduct.updatedAt
-        });
+        const product = await productService.createProduct(req.body);
+        console.log('✅ Product created successfully');
+        res.status(201).json(product);
     } catch (error) {
         next(error);
     }
@@ -29,21 +17,8 @@ exports.createProduct = async (req, res, next) => {
 exports.getAllProducts = async (req, res, next) => {
     try {
         console.log('📋 Retrieving all products');
-        
-        const products = await Product.find();
-        
-        const response = products.map(product => ({
-            id: product._id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
-        }));
-        
-        res.status(200).json(response);
+        const products = await productService.getAllProducts();
+        res.status(200).json(products);
     } catch (error) {
         next(error);
     }
@@ -54,25 +29,8 @@ exports.getProductById = async (req, res, next) => {
     try {
         const { id } = req.params;
         console.log('🔍 Retrieving product with ID:', id);
-        
-        const product = await Product.findById(id);
-        
-        if (!product) {
-            const error = new Error(`Product with ID: ${id} not found`);
-            error.status = 404;
-            throw error;
-        }
-        
-        res.status(200).json({
-            id: product._id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
-        });
+        const product = await productService.getProductById(id);
+        res.status(200).json(product);
     } catch (error) {
         next(error);
     }
@@ -83,31 +41,9 @@ exports.updateProduct = async (req, res, next) => {
     try {
         const { id } = req.params;
         console.log('✏️ Updating product with ID:', id);
-        
-        const product = await Product.findByIdAndUpdate(
-            id,
-            { ...req.body, updatedAt: Date.now() },
-            { new: true, runValidators: true }
-        );
-        
-        if (!product) {
-            const error = new Error(`Product with ID: ${id} not found`);
-            error.status = 404;
-            throw error;
-        }
-        
-        console.log('✅ Product updated successfully with ID:', product._id);
-        
-        res.status(200).json({
-            id: product._id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
-        });
+        const product = await productService.updateProduct(id, req.body);
+        console.log('✅ Product updated successfully');
+        res.status(200).json(product);
     } catch (error) {
         next(error);
     }
@@ -118,17 +54,8 @@ exports.deleteProduct = async (req, res, next) => {
     try {
         const { id } = req.params;
         console.log('🗑️ Deleting product with ID:', id);
-        
-        const product = await Product.findByIdAndDelete(id);
-        
-        if (!product) {
-            const error = new Error(`Product with ID: ${id} not found`);
-            error.status = 404;
-            throw error;
-        }
-        
-        console.log('✅ Product deleted successfully with ID:', id);
-        
+        await productService.deleteProduct(id);
+        console.log('✅ Product deleted successfully');
         res.status(204).send();
     } catch (error) {
         next(error);
@@ -140,21 +67,8 @@ exports.getProductsByCategory = async (req, res, next) => {
     try {
         const { category } = req.params;
         console.log('📂 Retrieving products by category:', category);
-        
-        const products = await Product.find({ category });
-        
-        const response = products.map(product => ({
-            id: product._id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
-        }));
-        
-        res.status(200).json(response);
+        const products = await productService.getProductsByCategory(category);
+        res.status(200).json(products);
     } catch (error) {
         next(error);
     }
@@ -165,23 +79,25 @@ exports.searchProductsByName = async (req, res, next) => {
     try {
         const { name } = req.query;
         console.log('🔎 Searching products by name:', name);
+        const products = await productService.searchProductsByName(name);
+        res.status(200).json(products);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.reduceStock = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { quantity } = req.body;
+
+        console.log(`📉 Reducing stock for product ${id} by ${quantity}`);
+
+        const product = await productService.reduceStock(id, quantity);
         
-        const products = await Product.find({ 
-            name: { $regex: name, $options: 'i' } 
-        });
+        console.log(`✅ Stock reduced successfully. New stock: ${product.stock}`);
         
-        const response = products.map(product => ({
-            id: product._id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            createdAt: product.createdAt,
-            updatedAt: product.updatedAt
-        }));
-        
-        res.status(200).json(response);
+        res.status(200).json(product);
     } catch (error) {
         next(error);
     }

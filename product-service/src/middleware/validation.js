@@ -45,7 +45,16 @@ const validate = (req, res, next) => {
     next();
 };
 
+const reduceStockRules = () => {
+    return [
+        body('quantity')
+            .notEmpty().withMessage('Quantity is required')
+            .isInt({ min: 1 }).withMessage('Quantity must be a positive integer')
+    ];
+};
+
 module.exports = {
     productValidationRules,
+    reduceStockRules,
     validate
 };

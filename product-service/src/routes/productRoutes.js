@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
-const { productValidationRules, validate } = require('../middleware/validation');
+const { productValidationRules, validate, reduceStockRules } = require('../middleware/validation');
 
 // Create product
 router.post('/', productValidationRules(), validate, productController.createProduct);
@@ -23,5 +23,8 @@ router.put('/:id', productValidationRules(), validate, productController.updateP
 
 // Delete product
 router.delete('/:id', productController.deleteProduct);
+
+// Reduce product stock
+router.put('/:id/reduce-stock', reduceStockRules(), validate, productController.reduceStock);
 
 module.exports = router;

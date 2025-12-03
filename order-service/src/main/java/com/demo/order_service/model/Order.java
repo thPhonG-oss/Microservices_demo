@@ -33,6 +33,9 @@ public class Order {
     @Column(name = "customer_phone")
     String customerPhone;
 
+    @Column(name = "customer_email")
+    String customerEmail;
+
     @Column(name = "shipping_address", nullable = false)
     String shippingAddress;
 
@@ -55,4 +58,8 @@ public class Order {
 
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
+
+    Boolean isCancelled;
+
+    Boolean isDeleted;
 }
