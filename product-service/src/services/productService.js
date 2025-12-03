@@ -7,7 +7,7 @@ class ProductService {
     formatProductResponse(product) {
         return {
             id: product._id,
-            name: product.name,
+            name: product.product_name,
             description: product.description,
             price: product.price,
             stock: product.stock,

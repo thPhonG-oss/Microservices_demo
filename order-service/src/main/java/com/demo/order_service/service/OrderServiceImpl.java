@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -52,14 +54,13 @@ public class OrderServiceImpl implements OrderService {
                 .isCancelled(false)
                 .isDeleted(false)
                 .build();
-        Order preOrder = orderRepository.save(order);
 
-        List<OrderItem> orderItems = buildOrderItems(request.getItems(), preOrder);
+        List<OrderItem> orderItems = buildOrderItems(request.getItems(), order);
 
-        preOrder.setOrderItems(orderItems);
-        preOrder.setTotalAmount(calculateTotalAmount(order.getOrderItems()));
+        order.setOrderItems(orderItems);
+        order.setTotalAmount(calculateTotalAmount(order.getOrderItems()));
 
-        Order savedOrder = orderRepository.save(preOrder);
+        Order savedOrder = orderRepository.save(order);
 
         return orderMapper.toOrderResponse(savedOrder);
     }
@@ -100,7 +101,10 @@ public class OrderServiceImpl implements OrderService {
 
         for(OrderItemRequest item : orderItemRequests) {
             try {
+
                 product = productClient.getProductById(item.getProductId());
+                log.info("Product id: {}", product.getId());
+                log.info("Product name: {}", product.getName());
             }
             catch(Exception e){
                 throw new ProductNotFoundException("Product not found");
