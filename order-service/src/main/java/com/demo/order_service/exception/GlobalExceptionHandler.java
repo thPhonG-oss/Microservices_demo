@@ -148,4 +148,18 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
     }
+    @ExceptionHandler(value = {InvalidOrderOperationException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidOrderOperationException(InvalidOrderOperationException ex) {
+        log.warn("Invalid order update attempt: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("INVALID ORDER OPERATION")
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }

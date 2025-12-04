@@ -6,9 +6,9 @@ spring:
     name: order-service
   datasource:
     # URL sẽ được override bởi environment variable
-    url: jdbc:mysql://mysql:3306/orderdb?createDatabaseIfNotExist=true
-    username: orderuser
-    password: orderpass
+    url: jdbc:mysql://localhost:3306/orderdb?createDatabaseIfNotExist=true #jdbc:mysql://mysql:3306/orderdb?createDatabaseIfNotExist=true
+    username: root #orderuser
+    password: 112233 #orderpass
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

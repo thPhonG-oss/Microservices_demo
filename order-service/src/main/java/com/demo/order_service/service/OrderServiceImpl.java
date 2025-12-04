@@ -3,10 +3,14 @@ package com.demo.order_service.service;
 import com.demo.order_service.DTOs.request.OrderItemRequest;
 import com.demo.order_service.DTOs.request.OrderRequest;
 import com.demo.order_service.DTOs.request.ProductStockRequest;
+import com.demo.order_service.DTOs.request.UpdateStatusRequest;
 import com.demo.order_service.DTOs.response.OrderResponse;
+import com.demo.order_service.DTOs.response.OrderStatusResponse;
 import com.demo.order_service.DTOs.response.ProductResponse;
 import com.demo.order_service.client.ProductClient;
 import com.demo.order_service.exception.InsufficientStockException;
+import com.demo.order_service.exception.InvalidOrderOperationException;
+import com.demo.order_service.exception.OrderNotFoundException;
 import com.demo.order_service.exception.ProductNotFoundException;
 import com.demo.order_service.mapper.OrderMapper;
 import com.demo.order_service.model.Order;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -67,32 +72,71 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse getOrderById(Long id) {
-        return null;
+        Order order = orderRepository.findByIdAndIsCancelledFalseAndIsDeletedFalse(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        return orderMapper.toOrderResponse(order);
     }
-
     @Override
     public OrderResponse getOrderByOrderNumber(String orderNumber) {
-        return null;
+
+        Order order = orderRepository.findByOrderNumberAndIsCancelledFalseAndIsDeletedFalse(orderNumber)
+                .orElseThrow(() -> new OrderNotFoundException("order number", orderNumber));
+
+        return orderMapper.toOrderResponse(order);
     }
 
     @Override
     public List<OrderResponse> getAllOrders() {
-        return List.of();
+        List<Order> orders = orderRepository.findAllByIsCancelledFalseAndIsDeletedFalse();
+        return orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .toList();
     }
 
     @Override
-    public OrderResponse updateOrderStatus(Long id, OrderStatus newStatus) {
-        return null;
+    public OrderStatusResponse updateOrderStatus(Long id, UpdateStatusRequest newStatus) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        if (Boolean.TRUE.equals(order.getIsCancelled()))
+            throw new InvalidOrderOperationException("Order already cancelled. Cannot update status.");
+        if (Boolean.TRUE.equals(order.getIsDeleted()))
+            throw new InvalidOrderOperationException("Order already deleted. Cannot update status.");
+        order.setStatus(newStatus.getStatus());
+        order.setUpdatedAt(LocalDateTime.now());
+
+        Order updated = orderRepository.save(order);
+        return orderMapper.toOrderStatusResponse(updated);
     }
 
     @Override
-    public OrderResponse cancelOrder(Long id, String reason) {
-        return null;
+    public OrderStatusResponse cancelOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        if (Boolean.TRUE.equals(order.getIsCancelled()))
+            throw new InvalidOrderOperationException("Order already cancelled.");
+
+        if (Boolean.TRUE.equals(order.getIsDeleted()))
+            throw new InvalidOrderOperationException("Order already deleted.");
+
+        order.setIsCancelled(true);
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setUpdatedAt(LocalDateTime.now());
+
+        Order updated = orderRepository.save(order);
+        return orderMapper.toOrderStatusResponse(updated);
     }
 
     @Override
     public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        if (Boolean.TRUE.equals(order.getIsDeleted()))
+            throw new InvalidOrderOperationException("Order already deleted.");
+        order.setIsDeleted(true);
+        order.setUpdatedAt(LocalDateTime.now());
 
+        orderRepository.save(order);
     }
 
     private List<OrderItem> buildOrderItems(List<OrderItemRequest> orderItemRequests, Order order) {
