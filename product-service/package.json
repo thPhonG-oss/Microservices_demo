@@ -13,15 +13,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0.67.2",
+    "@opentelemetry/exporter-zipkin": "^2.2.0",
+    "@opentelemetry/resources": "^2.2.0",
+    "@opentelemetry/sdk-node": "^0.208.0",
+    "@opentelemetry/semantic-conventions": "^1.38.0",
     "dotenv": "^17.2.3",
     "eureka-js-client": "^4.5.0",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
-    "mongoose": "^9.0.0",
-    "zipkin": "^0.22.0",
-    "zipkin-context-cls": "^0.22.0",
-    "zipkin-instrumentation-express": "^0.22.0",
-    "zipkin-transport-http": "^0.22.0"
+    "mongoose": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
