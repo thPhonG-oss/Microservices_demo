@@ -3,7 +3,6 @@ package com.demo.order_service.exception;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 
-import javax.naming.ServiceUnavailableException;
 
 public class ProductClientErrorDecoder implements ErrorDecoder {
 

@@ -32,6 +32,16 @@ management:
       exposure:
         include: health,info,metrics
 
+  # Zipkin Tracing Configuration
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  
+  # Tracing Configuration
+  tracing:
+    sampling:
+      probability: 1.0
+
 logging:
   level:
     com.demo.order: INFO

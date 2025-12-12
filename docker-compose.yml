@@ -50,6 +50,23 @@ services:
       retries: 5
       start_period: 40s
 
+  zipkin:
+    image: openzipkin/zipkin:3.4
+    container_name: zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-network
+    environment:
+      - STORAGE_TYPE=mem
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9411/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   #=============================================================================
   # MICROSERVICES LAYER
   #=============================================================================
@@ -118,10 +135,13 @@ services:
       - EUREKA_PORT=8761
       - SERVICE_NAME=product-service
       - SERVICE_PORT=8081
+      - ZIPKIN_URL=http://zipkin:9411
     depends_on:
       mongodb:
         condition: service_healthy
       discovery-service:
+        condition: service_healthy
+      zipkin:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
@@ -148,12 +168,16 @@ services:
       - SPRING_DATASOURCE_PASSWORD=orderpass
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - PRODUCT_SERVICE_URL=http://product-service:8081
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - MANAGEMENT_TRACING_SAMPLING_PROBABILITY=1.0
     depends_on:
       mysql:
         condition: service_healthy
       discovery-service:
         condition: service_healthy
       product-service:
+        condition: service_healthy
+      zipkin:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]

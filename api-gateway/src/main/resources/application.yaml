@@ -55,6 +55,16 @@ management:
     health:
       show-details: always
 
+  # Zipkin Tracing Configuration
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  
+  # Tracing Configuration
+  tracing:
+    sampling:
+      probability: 1.0  # Sample 100% of requests (for demo)
+
 # Logging
 logging:
   level:
